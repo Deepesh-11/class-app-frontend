@@ -13,7 +13,7 @@ type Props<T> = {
   subtitle: string
   fields: Field[]
   initialValues: Record<string, string>
-  isActive: boolean
+  isActive?: boolean
   onClose: () => void
   onUpdate: (data: Record<string, string | boolean | undefined>) => Promise<void>
   onDelete: () => Promise<void>
@@ -30,7 +30,7 @@ export default function DetailModal<T>({
   onDelete,
 }: Props<T>) {
   const [form, setForm] = useState<Record<string, string>>(initialValues)
-  const [isActive, setIsActive] = useState(initialActive)
+  const [isActive, setIsActive] = useState(initialActive ?? null)  // ← fixed
   const [loading, setLoading] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState("")
@@ -43,7 +43,10 @@ export default function DetailModal<T>({
       const data = Object.fromEntries(
         Object.entries(form).map(([k, v]) => [k, v || undefined])
       )
-      await onUpdate({ ...data, is_active: isActive })
+      await onUpdate({
+        ...data,
+        ...(initialActive !== undefined && { is_active: isActive ?? undefined }),
+      })
     } catch {
       setError("Failed to update.")
     } finally {
@@ -96,15 +99,17 @@ export default function DetailModal<T>({
             </div>
           ))}
 
-          <div className="flex items-center justify-between py-1">
-            <label className="text-xs font-medium text-gray-700">Active</label>
-            <button
-              onClick={() => setIsActive(!isActive)}
-              className={`relative w-9 h-5 rounded-full transition-colors ${isActive ? "bg-gray-900" : "bg-gray-200"}`}
-            >
-              <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${isActive ? "translate-x-4" : "translate-x-0"}`} />
-            </button>
-          </div>
+          {initialActive !== undefined && (
+            <div className="flex items-center justify-between py-1">
+              <label className="text-xs font-medium text-gray-700">Active</label>
+              <button
+                onClick={() => setIsActive(!isActive)}
+                className={`relative w-9 h-5 rounded-full transition-colors ${isActive ? "bg-gray-900" : "bg-gray-200"}`}
+              >
+                <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${isActive ? "translate-x-4" : "translate-x-0"}`} />
+              </button>
+            </div>
+          )}
         </div>
 
         {error && <p className="text-xs text-red-500 mt-3">{error}</p>}

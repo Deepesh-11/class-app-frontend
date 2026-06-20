@@ -8,11 +8,7 @@ export async function proxy(req: NextRequest) {
   const token = req.cookies.get("token")?.value
   const { pathname } = req.nextUrl
 
-  console.log("proxy hit:", pathname)
-  console.log("token:", token)
-
   if (!token) {
-    console.log("no token, redirecting to /login")
     return NextResponse.redirect(new URL("/login", req.url))
   }
 
@@ -37,7 +33,6 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next()
 
   } catch (e) {
-    console.log("jwt error:", e)
     return NextResponse.redirect(new URL("/login", req.url))
   }
 }
