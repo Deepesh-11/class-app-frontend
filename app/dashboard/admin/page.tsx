@@ -1,5 +1,5 @@
 import StatsGrid from "@/components/dashboard/StatsGrid"
-import StudentsTable from "@/components/dashboard/StudentsTable"
+import StudentsTable from "@/components/dashboard/Recents"
 import UpcomingPanel from "@/components/dashboard/UpcomingPanel"
 import AttendanceChart from "@/components/dashboard/AttendanceChart"
 
