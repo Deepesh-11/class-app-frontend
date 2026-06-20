@@ -6,26 +6,27 @@ export type UserInfo = {
   login_id: string | null
 }
 
-export type StudentCreate = {
+export type TeacherCreate = {
   name: string,
   email?: string,
-  roll_no?: string,
+  department?: string,
   phone?: string
 }
 
-export type StudentResponse = {
+export type TeacherResponse = {
   id: number
-  student_id: string
-  user_id: number
-  roll_no: string | null
+  teacher_id: string
+  email: string
+  department: string | null
   phone: string | null
   user: UserInfo
   created_at: string
   updated_at: string
+
 }
 
-export type StudentCreateResponse = {
-  student_id: string
+export type TeacherCreateResponse = {
+  teacher_id: string
   default_password: string
   user: UserInfo
 }

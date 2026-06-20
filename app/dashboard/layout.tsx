@@ -26,7 +26,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       />
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <Topbar setSidebarOpen={setSidebarOpen} />
         <main className="flex-1 overflow-y-auto px-5 py-6 space-y-6">
           {children}
         </main>
