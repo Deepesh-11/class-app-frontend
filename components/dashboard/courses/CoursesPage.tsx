@@ -3,14 +3,14 @@
 import { useState } from "react"
 import { useCourses } from "@/lib/hooks/useCourses"
 import DataTable from "@/components/dashboard/Table"
-import { CourseCreateResponse, CourseDetailResponse, CourseCreate } from "@/lib/types/course"
+import {  CourseCreate, CourseResponse } from "@/lib/types/course"
 import AddModal from "@/components/dashboard/AddModal"
 import DetailModal from "@/components/dashboard/DetailModal"
 
 export default function CoursesPage() {
     const { courses, loading, refresh, add, update, remove } = useCourses()
     const [addOpen, setAddOpen] = useState(false)
-    const [selected, setSelected] = useState<CourseCreateResponse>()
+    const [selected, setSelected] = useState<CourseResponse>()
 
     return (
         <div className="space-y-5">
@@ -34,7 +34,7 @@ export default function CoursesPage() {
                 columns={[
                     {
                         label: "Courses",
-                        render: (c: CourseCreateResponse) => (
+                        render: (c: CourseResponse) => (
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium text-gray-500">
                                     {c.course_name.split(" ").map(n => n[0]).join("").slice(0, 2)}

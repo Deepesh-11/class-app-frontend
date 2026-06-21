@@ -19,14 +19,6 @@ export type CourseResponse = {
   id: number
   course_code: string
   course_name: string
-  class_id: number | null
-  teacher_id: number | null
-}
-
-export type CourseCreateResponse = {
-  id: number
-  course_code: string
-  course_name: string
 }
 
 export type CourseDetailResponse = {

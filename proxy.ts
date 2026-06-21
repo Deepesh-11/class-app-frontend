@@ -14,9 +14,7 @@ export async function proxy(req: NextRequest) {
 
   try {
     const { payload } = await jwtVerify(token, secret)
-    console.log("payload:", payload)
     const role = payload.role as string
-    console.log("role:", role)
 
     if (pathname.startsWith("/dashboard/admin") && role !== "admin") {
       return NextResponse.redirect(new URL("/unauthorized", req.url))

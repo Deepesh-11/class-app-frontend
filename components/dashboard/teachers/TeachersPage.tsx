@@ -49,7 +49,7 @@ export default function StudentsPage() {
             ),
           },
           { label: "ID", render: (t) => <span className="text-gray-500 font-mono text-xs">{t.teacher_id}</span> },
-          { label: "Roll No.", render: (t) => <span className="text-gray-500">{t.department ?? "—"}</span>, className: "hidden sm:table-cell" },
+          { label: "Department", render: (t) => <span className="text-gray-500">{t.department ?? "—"}</span>, className: "hidden sm:table-cell" },
           { label: "Phone", render: (t) => <span className="text-gray-500">{t.phone ?? "—"}</span>, className: "hidden md:table-cell" },
           {
             label: "Status",

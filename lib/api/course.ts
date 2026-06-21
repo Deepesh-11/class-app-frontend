@@ -1,4 +1,4 @@
-import { CourseResponse, CourseCreateResponse } from "@/lib/types/course"
+import { CourseResponse } from "@/lib/types/course"
 
 const BASE = "/api/admin/courses"
 
@@ -17,7 +17,7 @@ export async function getCourse(course_id: number): Promise<CourseResponse> {
 export async function createCourse(data: {
   course_code: string
   course_name: string
-}): Promise<CourseCreateResponse> {
+}): Promise<CourseResponse> {
   const res = await fetch(BASE, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -37,7 +37,7 @@ export async function createCourse(data: {
 export async function updateCourse(
   course_id: number,
   data: { course_name?: string;  course_code?: string }
-): Promise<CourseCreateResponse> {
+): Promise<CourseResponse> {
   const res = await fetch(`${BASE}/${course_id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
