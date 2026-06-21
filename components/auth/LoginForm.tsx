@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { useAuth } from "@/hooks/useAuth"
 
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
@@ -11,10 +10,9 @@ export default function LoginForm() {
     password: "",
   })
 
-  const { login, loading, error } = useAuth()
-
-  const handleSubmit = async () => {
-    await login(formData)
+  const handleSubmit = () => {
+    console.log(formData)
+    // wire up auth service here later
   }
 
   return (
@@ -34,13 +32,6 @@ export default function LoginForm() {
       <h1 className="text-2xl font-medium text-gray-900 mb-1 tracking-tight">Welcome back</h1>
       <p className="text-sm text-gray-500 mb-7">Sign in to your account to continue.</p>
 
-      {/* Error */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-5">
-          <p className="text-sm text-red-600">{error}</p>
-        </div>
-      )}
-
       {/* Email */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -51,7 +42,7 @@ export default function LoginForm() {
           placeholder="you@example.com"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          className="w-full h-10 px-3 text-sm text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition"
+          className="w-full h-10 px-3 text-sm border border-gray-200 rounded-lg outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition"
         />
       </div>
 
@@ -66,7 +57,7 @@ export default function LoginForm() {
             placeholder="••••••••"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            className="w-full h-10 px-3 pr-10 text-sm text-gray-900 border border-gray-200 rounded-lg outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition"
+            className="w-full h-10 px-3 pr-10 text-sm border border-gray-200 rounded-lg outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 transition"
           />
           <button
             type="button"
@@ -97,10 +88,9 @@ export default function LoginForm() {
       {/* Submit */}
       <button
         onClick={handleSubmit}
-        disabled={loading}
-        className="w-full h-10 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 active:scale-[0.99] transition disabled:opacity-50"
+        className="w-full h-10 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 active:scale-[0.99] transition"
       >
-        {loading ? "Signing in..." : "Sign in"}
+        Sign in
       </button>
 
     </div>
