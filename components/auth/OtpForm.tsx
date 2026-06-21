@@ -1,11 +1,14 @@
 "use client"
 
 import { useState, useRef } from "react"
-import Link from "next/link"
+import { useAuth } from "@/hooks/useAuth"
+import { useAuthStore } from "@/store/authStore"
 
 export default function OtpForm() {
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""])
   const inputs = useRef<(HTMLInputElement | null)[]>([])
+  const { verifyOtp, loading, error } = useAuth()
+  const { user } = useAuthStore()
 
   const handleChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return
@@ -33,10 +36,13 @@ export default function OtpForm() {
     inputs.current[Math.min(pasted.length, 5)]?.focus()
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const code = otp.join("")
-    console.log("otp submitted:", code)
-    // wire up auth service here later
+    if (code.length !== 6) return
+    await verifyOtp({
+      email: user?.email ?? "",
+      otp: code,
+    })
   }
 
   return (
@@ -58,6 +64,13 @@ export default function OtpForm() {
         Enter the 6-digit code sent to your phone number.
       </p>
 
+      {/* Error */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 mb-5">
+          <p className="text-sm text-red-600">{error}</p>
+        </div>
+      )}
+
       {/* OTP inputs */}
       <div className="flex gap-2 mb-6" onPaste={handlePaste}>
         {otp.map((digit, index) => (
@@ -78,9 +91,10 @@ export default function OtpForm() {
       {/* Submit */}
       <button
         onClick={handleSubmit}
-        className="w-full h-10 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 active:scale-[0.99] transition"
+        disabled={loading || otp.join("").length !== 6}
+        className="w-full h-10 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 active:scale-[0.99] transition disabled:opacity-50"
       >
-        Verify
+        {loading ? "Verifying..." : "Verify"}
       </button>
 
       {/* Resend */}
@@ -93,9 +107,9 @@ export default function OtpForm() {
 
       {/* Back */}
       <p className="text-center text-sm text-gray-500 mt-3">
-        <Link href="/register" className="text-gray-500 hover:text-gray-900">
-          ← Back to register
-        </Link>
+        <a href="/login" className="text-gray-500 hover:text-gray-900">
+          ← Back to login
+        </a>
       </p>
     </div>
   )
