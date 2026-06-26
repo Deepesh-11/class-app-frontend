@@ -4,11 +4,11 @@ import {
   getMyCoursesTeacher,
   getMyClassroomsTeacher,
   getAttendanceSessions,
-  createAttendanceSession,
-  startSession,
+  startAttendance as startAttendanceApi,
   endSession,
   getClassroomStudents,
   getCourseSessions,
+  getTeacherCourseDetail
 } from "@/lib/api/teacher-self"
 
 export function useTeacherSelf() {
@@ -17,6 +17,8 @@ export function useTeacherSelf() {
   const [sessions, setSessions] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [startingCourseId, setStartingCourseId] = useState<number | null>(null)
+  const [endingSessionId, setEndingSessionId] = useState<number | null>(null)
 
   const fetchAll = useCallback(async () => {
     setLoading(true)
@@ -39,20 +41,36 @@ export function useTeacherSelf() {
 
   useEffect(() => { fetchAll() }, [fetchAll])
 
-  async function createSession(data: { topic: string; course_id: number; date: string }) {
-    await createAttendanceSession(data)
-    await fetchAll()
-  }
 
-  async function start(sessionId: number) {
-    await startSession(sessionId)
-    await fetchAll()
+  async function startAttendance(courseId: number) {
+    setStartingCourseId(courseId)
+    try {
+      const session = await startAttendanceApi(courseId)
+      const sessionsData = await getAttendanceSessions()
+      setSessions(sessionsData)
+      return session
+    } catch (e) {
+      setError((e as Error).message)
+      return null
+    } finally {
+      setStartingCourseId(null)
+    }
   }
 
   async function end(sessionId: number) {
-    await endSession(sessionId)
-    await fetchAll()
+    setEndingSessionId(sessionId)
+    try {
+      await endSession(sessionId)
+
+      const sessionsData = await getAttendanceSessions()
+      setSessions(sessionsData)
+    } catch (e) {
+      setError((e as Error).message)
+    } finally {
+      setEndingSessionId(null)
+    }
   }
+
 
   async function getStudents(classroomId: number) {
     return getClassroomStudents(classroomId)
@@ -62,6 +80,10 @@ export function useTeacherSelf() {
     return getCourseSessions(courseId)
   }
 
+  async function getTeacherCourse(courseId: number) {
+    return getTeacherCourseDetail(courseId) 
+  }
+
   return {
     courses,
     classrooms,
@@ -69,10 +91,11 @@ export function useTeacherSelf() {
     loading,
     error,
     refresh: fetchAll,
-    createSession,
-    start,
+    startingCourseId,
+    startAttendance,
     end,
     getStudents,
     getSessions,
+    getTeacherCourse
   }
 }

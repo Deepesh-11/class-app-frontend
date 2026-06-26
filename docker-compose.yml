@@ -1,0 +1,12 @@
+services:
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: classplus_mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"   # SMTP — FastAPI sends here
+      - "8025:8025"   # Web UI — view emails in browser
+    environment:
+      MP_MAX_MESSAGES: 100       # keep last 100 emails
+      MP_SMTP_AUTH_ACCEPT_ANY: 1 # accept any user/pass (no real auth needed)
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1

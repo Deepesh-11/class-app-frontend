@@ -1,8 +1,27 @@
+import { ClassSessionResponse } from "@/lib/types/attendance"
+import { TeacherCourseDetailResponse } from "@/lib/types/course"
 const BASE = "/api"
 
 export async function getMyCoursesTeacher() {
   const res = await fetch(`${BASE}/teacher/me/courses`, { credentials: "include" })
   if (!res.ok) throw new Error("Failed to fetch courses")
+  return res.json()
+}
+
+export async function getTeacherCourseDetail(
+  courseId: number
+): Promise<TeacherCourseDetailResponse> {
+  const res = await fetch(
+    `${BASE}/teacher/me/courses/${courseId}`,
+    {
+      credentials: "include",
+    }
+  )
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch course details")
+  }
+
   return res.json()
 }
 
@@ -30,35 +49,26 @@ export async function getAttendanceSessions() {
   return res.json()
 }
 
-export async function createAttendanceSession(data: {
-  topic: string
-  course_id: number
-  date: string
-}) {
-  const res = await fetch(`${BASE}/attendance/sessions`, {
+export async function startAttendance(course_id: number): Promise<ClassSessionResponse> {
+  const res = await fetch(`${BASE}/attendance/courses/${course_id}/start`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     credentials: "include",
-    body: JSON.stringify(data),
   })
-  if (!res.ok) throw new Error("Failed to create session")
+  if (!res.ok) {
+    const err = await res.json()
+    throw new Error(err.detail ?? "Failed to start attendance")
+  }
   return res.json()
 }
 
-export async function startSession(sessionId: number) {
-  const res = await fetch(`${BASE}/attendance/sessions/${sessionId}/start`, {
+export async function endSession(session_id: number): Promise<ClassSessionResponse> {
+  const res = await fetch(`${BASE}/attendance/sessions/${session_id}/end`, {
     method: "POST",
     credentials: "include",
   })
-  if (!res.ok) throw new Error("Failed to start session")
-  return res.json()
-}
-
-export async function endSession(sessionId: number) {
-  const res = await fetch(`${BASE}/attendance/sessions/${sessionId}/end`, {
-    method: "POST",
-    credentials: "include",
-  })
-  if (!res.ok) throw new Error("Failed to end session")
+  if (!res.ok) {
+    const err = await res.json()
+    throw new Error(err.detail ?? "Failed to end session")
+  }
   return res.json()
 }

@@ -4,19 +4,22 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useTeacherSelf } from "@/lib/hooks/useTeacherSelf"
+import { TeacherCourseDetailResponse } from "@/lib/types/course"
+import { formatDate } from "@/lib/utils/utils"
 
 export default function TeacherCourseSessionsPage() {
   const { course_id } = useParams()
-  const { getSessions } = useTeacherSelf()
-  const [sessions, setSessions] = useState<any[]>([])
+  const { getTeacherCourse } = useTeacherSelf()
+  const [teacherCourse, setTeacherCourse] = useState<TeacherCourseDetailResponse>()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetch = async () => {
       try {
-        const data = await getSessions(Number(course_id))
-        setSessions(data)
+        const course = await getTeacherCourse(Number(course_id))
+        console.log(course)
+        setTeacherCourse(course)
       } catch (e) {
         setError((e as Error).message)
       } finally {
@@ -62,35 +65,181 @@ export default function TeacherCourseSessionsPage() {
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-5xl mx-auto">
 
+        {/* Course Header */}
+        <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-xs font-medium tracking-wide text-gray-500 uppercase">
+                {teacherCourse?.course_code}
+              </p>
+
+              <h1 className="mt-1 text-2xl font-semibold text-gray-900">
+                {teacherCourse?.course_name}
+              </h1>
+
+              <p className="mt-2 text-sm text-gray-500">
+                {`${teacherCourse?.total_sessions} sessions created`}
+              </p>
+            </div>
+          </div>
+        </div>
+
+
+
+        {/* Resources */}
+        <div className="grid lg:grid-cols-2 gap-6 mb-6">
+          {/* Notes */}
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+              <h2 className="font-medium text-gray-900">
+                Notes & Materials
+              </h2>
+
+              <Link href={`/dashboard/teacher/courses/${course_id}/notes`} className="text-sm text-gray-900 hover:underline">
+                + Upload
+              </Link>
+            </div>
+
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-100">
+                  <th className="text-left px-5 py-3 text-xs text-gray-500">
+                    File
+                  </th>
+
+                  <th className="text-left px-5 py-3 text-xs text-gray-500">
+                    Uploaded
+                  </th>
+
+                  <th className="text-left px-5 py-3 text-xs text-gray-500">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {[
+                  {
+                    id: 1,
+                    title: "Week 1 Notes.pdf",
+                    uploaded: "2026-06-20",
+                  },
+                  {
+                    id: 2,
+                    title: "Chapter 2 Slides.pptx",
+                    uploaded: "2026-06-22",
+                  },
+                ].map((note) => (
+                  <tr
+                    key={note.id}
+                    className="border-b border-gray-100 last:border-0"
+                  >
+                    <td className="px-5 py-4 font-medium text-gray-900">
+                      {note.title}
+                    </td>
+
+                    <td className="px-5 py-4 text-gray-600">
+                      {note.uploaded}
+                    </td>
+
+                    <td className="px-5 py-4">
+                      <button className="text-sm text-gray-500 hover:text-gray-900">
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Assignments */}
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+              <h2 className="font-medium text-gray-900">
+                Assignments
+              </h2>
+
+              <Link href={`/dashboard/teacher/courses/${course_id}/assignments`} className="text-sm text-gray-900 hover:underline">
+                + Create
+              </Link>
+            </div>
+
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-100">
+                  <th className="text-left px-5 py-3 text-xs text-gray-500">
+                    Title
+                  </th>
+
+                  <th className="text-left px-5 py-3 text-xs text-gray-500">
+                    Due Date
+                  </th>
+
+                  <th className="text-left px-5 py-3 text-xs text-gray-500">
+                    Status
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {[
+                  {
+                    id: 1,
+                    title: "Algebra Worksheet",
+                    due: "2026-06-30",
+                    status: "Active",
+                  },
+                  {
+                    id: 2,
+                    title: "Linear Equations Quiz",
+                    due: "2026-07-05",
+                    status: "Draft",
+                  },
+                ].map((assignment) => (
+                  <tr
+                    key={assignment.id}
+                    className="border-b border-gray-100 last:border-0"
+                  >
+                    <td className="px-5 py-4 font-medium text-gray-900">
+                      {assignment.title}
+                    </td>
+
+                    <td className="px-5 py-4 text-gray-600">
+                      {assignment.due}
+                    </td>
+
+                    <td className="px-5 py-4">
+                      <span
+                        className={`px-2.5 py-1 rounded-full text-xs font-medium ${assignment.status === "Active"
+                          ? "bg-green-50 text-green-700"
+                          : "bg-yellow-50 text-yellow-700"
+                          }`}
+                      >
+                        {assignment.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <div className="mb-8">
-          <Link href="/dashboard/teacher/courses" className="text-xs text-gray-400 hover:text-gray-700 transition">
-            ← Back to courses
-          </Link>
           <div className="flex items-center justify-between mt-2">
             <div>
               <h1 className="text-2xl font-medium text-gray-900 tracking-tight">Sessions</h1>
               <p className="text-sm text-gray-500 mt-1">
-                {sessions.length} session{sessions.length !== 1 ? "s" : ""} for this course.
+                {`${teacherCourse?.total_sessions} sessions`}
               </p>
             </div>
-            <Link
-              href="/dashboard/teacher/attendance"
-              className="h-9 px-4 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 active:scale-[0.99] transition flex items-center"
-            >
-              + New session
-            </Link>
           </div>
         </div>
 
-        {sessions.length === 0 ? (
+        {teacherCourse?.total_sessions == 0 ? (
           <div className="bg-white border border-gray-200 rounded-xl p-12 text-center">
             <p className="text-sm text-gray-400 mb-4">No sessions created yet.</p>
-            <Link
-              href="/dashboard/teacher/attendance"
-              className="text-sm font-medium text-gray-900 hover:underline"
-            >
-              Create your first session →
-            </Link>
           </div>
         ) : (
           <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
@@ -104,18 +253,17 @@ export default function TeacherCourseSessionsPage() {
                 </tr>
               </thead>
               <tbody>
-                {sessions.map((session: any, i: number) => (
-                  <tr key={session.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition">
+                {teacherCourse?.all_sessions.map((session: any, i: number) => (
+                  <tr key={session?.id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition">
                     <td className="px-5 py-4 text-gray-400 text-xs">{i + 1}</td>
-                    <td className="px-5 py-4 text-gray-600">{session.date}</td>
-                    <td className="px-5 py-4 font-medium text-gray-900">{session.topic}</td>
+                    <td className="px-5 py-4 text-gray-600">{formatDate(session?.started_at)}</td>
+                    <td className="px-5 py-4 font-medium text-gray-900">{session.title}</td>
                     <td className="px-5 py-4">
-                      <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${
-                        session.total_students > 0 &&
+                      <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${session.total_students > 0 &&
                         session.total_present / session.total_students >= 0.75
-                          ? "bg-green-50 text-green-700"
-                          : "bg-yellow-50 text-yellow-700"
-                      }`}>
+                        ? "bg-green-50 text-green-700"
+                        : "bg-yellow-50 text-yellow-700"
+                        }`}>
                         {session.total_present}/{session.total_students} present
                       </span>
                     </td>

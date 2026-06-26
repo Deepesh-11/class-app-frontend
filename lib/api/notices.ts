@@ -44,3 +44,16 @@ export async function deleteNotice(notice_id: number): Promise<void> {
     })
     if (!res.ok) throw new Error("Failed to delete notice")
 }
+
+
+export async function getUnreadNoticeCount(): Promise<{ count: number }> {
+    const res = await fetch(`${BASE}/unread-count`, {
+        credentials: "include",
+    })
+
+    if (!res.ok) {
+        throw new Error("Failed to fetch unread notice count")
+    }
+
+    return res.json()
+}

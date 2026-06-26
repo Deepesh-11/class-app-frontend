@@ -28,7 +28,6 @@ export async function createTeacher(data: {
   })
   if (!res.ok) {
     const err = await res.json()
-    // FastAPI validation errors return detail as an array of objects
     const message = Array.isArray(err.detail)
       ? err.detail.map((e: any) => e.msg).join(", ")
       : err.detail ?? "Failed to create teacher"

@@ -3,9 +3,12 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useStudentSelf } from "@/lib/hooks/useStudentSelf"
+import { useActiveSession } from "@/lib/hooks/useActiveSession"
+import { formatDateTime } from "@/lib/utils/utils"
 
 export default function StudentAttendancePage() {
-  const { attendance, records, activeSession, loading, error, join } = useStudentSelf()
+  const { activeSession, refresh } = useActiveSession()
+  const { attendance, records, loading, error, join } = useStudentSelf()
   const [activeTab, setActiveTab] = useState<"summary" | "records">("summary")
   const [confirming, setConfirming] = useState(false)
   const [joinState, setJoinState] = useState<"idle" | "joined">("idle")
@@ -79,7 +82,7 @@ export default function StudentAttendancePage() {
                   <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
                   <p className="text-sm font-medium text-blue-800">Active session in your classroom</p>
                 </div>
-                <p className="text-base font-medium text-blue-900">{activeSession.topic}</p>
+                <p className="text-base font-medium text-blue-900">{activeSession.title}</p>
                 <p className="text-xs text-blue-700 mt-0.5">{activeSession.course_name}</p>
               </div>
               <button
@@ -98,8 +101,7 @@ export default function StudentAttendancePage() {
             <p className="text-sm font-medium text-gray-900 mb-1">Confirm attendance</p>
             <p className="text-sm text-gray-500 mb-5">
               You are about to mark your attendance for{" "}
-              <span className="font-medium text-gray-900">{activeSession.course_name}</span> —{" "}
-              <span className="font-medium text-gray-900">{activeSession.topic}</span>.
+              <span className="font-medium text-gray-900">{activeSession.title}</span>.
               Your presence will be tracked from the time you join until the session ends.
             </p>
             <div className="flex gap-3">
@@ -127,7 +129,7 @@ export default function StudentAttendancePage() {
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               <p className="text-sm font-medium text-green-800">You are in this session</p>
             </div>
-            <p className="text-base font-medium text-green-900">{activeSession.topic}</p>
+            <p className="text-base font-medium text-green-900">{activeSession.title}</p>
             <p className="text-xs text-green-700 mt-0.5">{activeSession.course_name}</p>
             <p className="text-xs text-green-600 mt-2">Attendance is being tracked automatically.</p>
           </div>
@@ -189,16 +191,15 @@ export default function StudentAttendancePage() {
                 <tbody>
                   {attendance.map((row: any, i: number) => (
                     <tr key={i} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition">
-                      <td className="px-5 py-4 font-medium text-gray-900">{row.course}</td>
-                      <td className="px-5 py-4 text-gray-600">{row.present}</td>
-                      <td className="px-5 py-4 text-gray-600">{row.total}</td>
+                      <td className="px-5 py-4 font-medium text-gray-900">{row.course_name}</td>
+                      <td className="px-5 py-4 text-gray-600">{row.attended}</td>
+                      <td className="px-5 py-4 text-gray-600">{row.total_sessions}</td>
                       <td className="px-5 py-4">
-                        <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${
-                          row.percentage >= 90 ? "bg-green-50 text-green-700"
-                          : row.percentage >= 75 ? "bg-yellow-50 text-yellow-700"
-                          : "bg-red-50 text-red-700"
-                        }`}>
-                          {row.percentage}%
+                        <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${row.attendance_percentage >= 90 ? "bg-green-50 text-green-700"
+                            : row.attendance_percentage >= 75 ? "bg-yellow-50 text-yellow-700"
+                              : "bg-red-50 text-red-700"
+                          }`}>
+                          {row.attendance_percentage}%
                         </span>
                       </td>
                     </tr>
@@ -211,7 +212,7 @@ export default function StudentAttendancePage() {
 
         {/* Records tab */}
         {activeTab === "records" && (
-          records.length === 0 ? (
+          records && records.length === 0 ? (
             <div className="bg-white border border-gray-200 rounded-xl p-12 text-center">
               <p className="text-sm text-gray-400">No attendance records found.</p>
             </div>
@@ -226,26 +227,27 @@ export default function StudentAttendancePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {records.map((row: any, i: number) => (
+                  {records?.map((row: any, i: number) => (
                     <tr key={i} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition">
-                      <td className="px-5 py-4 font-medium text-gray-900">{row.course}</td>
-                      <td className="px-5 py-4 text-gray-600">{row.date}</td>
+                      <td className="px-5 py-4 font-medium text-gray-900">{row.course_name}</td>
+                      <td className="px-5 py-4 text-gray-600">{formatDateTime(row.session_date)}</td>
                       <td className="px-5 py-4">
-                        <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${
-                          row.status === "present" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
-                        }`}>
-                          {row.status === "present" ? "Present" : "Absent"}
-                        </span>
-                      </td>
+                        <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${row.marked_at
+                            ? "bg-green-50 text-green-700"
+                            : "bg-red-50 text-red-700"
+                          }`}>
+                        {row.marked_at ? "Present" : "Absent"}
+                      </span>
+                    </td>
                     </tr>
                   ))}
-                </tbody>
-              </table>
+              </tbody>
+            </table>
             </div>
-          )
+      )
         )}
 
-      </div>
     </div>
+    </div >
   )
 }

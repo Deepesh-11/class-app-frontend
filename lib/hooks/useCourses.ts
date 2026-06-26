@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { getCourses, createCourse, updateCourse, deleteCourse } from "@/lib/api/course"
-import { CourseCreateResponse } from "@/lib/types/course"
+import { CourseResponse } from "@/lib/types/course"
 
 export function useCourses() {
-  const [courses, setCourses] = useState<CourseCreateResponse[]>([])
+  const [courses, setCourses] = useState<CourseResponse[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 

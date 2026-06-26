@@ -16,19 +16,17 @@ export async function proxy(req: NextRequest) {
     const { payload } = await jwtVerify(token, secret)
     const role = payload.role as string
 
-    if (pathname.startsWith("/dashboard/admin") && role !== "admin") {
+    const isAdminRoute = pathname.startsWith("/dashboard/admin")
+    const isTeacherRoute = pathname.startsWith("/dashboard/teacher")
+    const isStudentRoute = pathname.startsWith("/dashboard/student")
+
+    if (
+      (isAdminRoute && role !== "admin") ||
+      (isTeacherRoute && role !== "teacher") ||
+      (isStudentRoute && role !== "student")
+    ) {
       return NextResponse.redirect(new URL("/unauthorized", req.url))
     }
-
-    if (pathname.startsWith("/dashboard/teacher") && role !== "teacher") {
-      return NextResponse.redirect(new URL("/unauthorized", req.url))
-    }
-
-    if (pathname.startsWith("/dashboard/student") && role !== "student") {
-      return NextResponse.redirect(new URL("/unauthorized", req.url))
-    }
-
-    return NextResponse.next()
 
   } catch (e) {
     return NextResponse.redirect(new URL("/login", req.url))

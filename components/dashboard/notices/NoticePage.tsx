@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useNotices } from "@/lib/hooks/useNotices"
+import { useNotices } from "@/lib/hooks/useNoticeManagement"
 import { TargetRole } from "@/lib/types/notice"
 
 type Filter = "all" | "active" | "inactive"

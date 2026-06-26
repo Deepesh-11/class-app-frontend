@@ -14,14 +14,14 @@ export default function TeacherAssignmentsPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between mt-2">
             <div>
-              <h1 className="text-2xl font-medium text-gray-900 tracking-tight">Assignments</h1>
-              <p className="text-sm text-gray-500 mt-1">Manage assignments for this course.</p>
+              <h1 className="text-2xl font-medium text-gray-900 tracking-tight">Notes</h1>
+              <p className="text-sm text-gray-500 mt-1">Manage Notes for this course.</p>
             </div>
             <button
               disabled
               className="h-9 px-4 bg-gray-900 text-white text-sm font-medium rounded-lg opacity-50 cursor-not-allowed"
             >
-              + New assignment
+              + Add a new Note
             </button>
           </div>
         </div>
@@ -33,9 +33,9 @@ export default function TeacherAssignmentsPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
-          <p className="text-sm font-medium text-gray-900 mb-1">Assignments coming soon</p>
+          <p className="text-sm font-medium text-gray-900 mb-1">Notes coming soon</p>
           <p className="text-xs text-gray-400 max-w-xs mx-auto">
-            Assignment management is under development. Once the backend is ready, you'll be able to create, assign, and review submissions here.
+            Notes management is under development. Once the backend is ready, you'll be able to create, assign, and review submissions here.
           </p>
         </div>
 

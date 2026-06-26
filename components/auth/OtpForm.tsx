@@ -1,11 +1,22 @@
 "use client"
 
 import { useState, useRef } from "react"
-import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { verifyOtp, getMe } from "@/lib/api/auth"
 
-export default function OtpForm() {
+interface OtpFormProps {
+  email: string
+  onBack: () => void
+}
+
+
+export default function OtpForm({ email, onBack }: OtpFormProps) {
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""])
+  const [rememberMe, setRememberMe] = useState(false)
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
   const inputs = useRef<(HTMLInputElement | null)[]>([])
+  const router = useRouter()
 
   const handleChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return
@@ -33,10 +44,37 @@ export default function OtpForm() {
     inputs.current[Math.min(pasted.length, 5)]?.focus()
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const code = otp.join("")
-    console.log("otp submitted:", code)
-    // wire up auth service here later
+    if (code.length < 6) {
+      setError("Please enter the full 6-digit code.")
+      return
+    }
+    setLoading(true)
+    setError("")
+    try {
+      await verifyOtp(email, code, rememberMe)       // sets the cookie
+      const { role } = await getMe()                 // read role from API
+      router.push(`/dashboard/${role}`)
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResend = async () => {
+    setError("")
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/resend-otp`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      })
+    } catch {
+      setError("Could not resend OTP. Please try again.")
+    }
   }
 
   return (
@@ -53,9 +91,9 @@ export default function OtpForm() {
         <span className="text-base font-medium text-gray-900">ClassPlus</span>
       </div>
 
-      <h1 className="text-2xl font-medium text-gray-900 mb-1 tracking-tight">Verify your number</h1>
+      <h1 className="text-2xl font-medium text-gray-900 mb-1 tracking-tight">Check your email</h1>
       <p className="text-sm text-gray-500 mb-7">
-        Enter the 6-digit code sent to your phone number.
+        We sent a one-time code to <span className="text-gray-800 font-medium">{email}</span>.
       </p>
 
       {/* OTP inputs */}
@@ -75,28 +113,54 @@ export default function OtpForm() {
         ))}
       </div>
 
+      {error && <p className="text-xs text-red-500 mb-4">{error}</p>}
+
+      {/* Remember me */}
+      <label className="flex items-center gap-2.5 mb-6 cursor-pointer select-none group">
+        <div className="relative">
+          <input
+            type="checkbox"
+            className="sr-only peer"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+          />
+          <div className="w-4 h-4 border border-gray-300 rounded peer-checked:bg-gray-900 peer-checked:border-gray-900 transition" />
+          <svg
+            className="absolute inset-0 m-auto w-2.5 h-2.5 text-white opacity-0 peer-checked:opacity-100 transition pointer-events-none"
+            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <span className="text-sm text-gray-500 group-hover:text-gray-700 transition">
+          Remember me for 30 days
+        </span>
+      </label>
+
       {/* Submit */}
       <button
         onClick={handleSubmit}
-        className="w-full h-10 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 active:scale-[0.99] transition"
+        disabled={loading}
+        className="w-full h-10 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed transition"
       >
-        Verify
+        {loading ? "Verifying…" : "Verify & continue"}
       </button>
 
       {/* Resend */}
       <p className="text-center text-sm text-gray-500 mt-6">
         Didn&apos;t receive a code?{" "}
-        <button className="text-gray-900 font-medium hover:underline">
+        <button onClick={handleResend} className="text-gray-900 font-medium hover:underline">
           Resend
         </button>
       </p>
 
       {/* Back */}
-      <p className="text-center text-sm text-gray-500 mt-3">
-        <Link href="/register" className="text-gray-500 hover:text-gray-900">
-          ← Back to register
-        </Link>
-      </p>
+      <button
+        onClick={onBack}
+        className="w-full mt-3 text-xs text-gray-500 hover:text-gray-800"
+      >
+        ← Back to sign in
+      </button>
     </div>
   )
 }

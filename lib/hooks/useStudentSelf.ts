@@ -8,13 +8,13 @@ import {
   getActiveSession,
   joinSession,
 } from "@/lib/api/student-self"
+import { AttendanceHistory } from "../types/attendance"
 
 export function useStudentSelf() {
   const [classroom, setClassroom] = useState<any>(null)
   const [courses, setCourses] = useState<any[]>([])
   const [attendance, setAttendance] = useState<any[]>([])
-  const [records, setRecords] = useState<any[]>([])
-  const [activeSession, setActiveSession] = useState<any>(null)
+  const [records, setRecords] = useState<AttendanceHistory[]>()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -22,19 +22,17 @@ export function useStudentSelf() {
     setLoading(true)
     setError(null)
     try {
-      const [classroomData, coursesData, attendanceData, recordsData, sessionData] =
+      const [classroomData, coursesData, attendanceData, recordsData] =
         await Promise.all([
           getMyClassroom(),
           getMyCourses(),
           getMyAttendance(),
           getMyAttendanceRecords(),
-          getActiveSession(),
         ])
       setClassroom(classroomData)
       setCourses(coursesData)
       setAttendance(attendanceData)
       setRecords(recordsData)
-      setActiveSession(sessionData)
     } catch (e) {
       setError((e as Error).message)
     } finally {
@@ -54,10 +52,11 @@ export function useStudentSelf() {
     courses,
     attendance,
     records,
-    activeSession,
     loading,
     error,
     refresh: fetchAll,
     join,
   }
+
+
 }
