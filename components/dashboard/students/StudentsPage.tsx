@@ -64,7 +64,7 @@ export default function StudentsPage() {
           title="Add student"
           fields={[
             { label: "Name", key: "name", placeholder: "Full name", required: true },
-            { label: "Email", key: "email", placeholder: "you@example.com" },
+            { label: "Email", key: "email", placeholder: "you@example.com", required: true },
             { label: "Roll no.", key: "roll_no", placeholder: "e.g. 2024-001" },
             { label: "Phone", key: "phone", placeholder: "+1 234 567 8900" },
           ]}

@@ -57,6 +57,4 @@ export function useStudentSelf() {
     refresh: fetchAll,
     join,
   }
-
-
 }

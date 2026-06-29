@@ -5,9 +5,17 @@ import { useState } from "react"
 type Field = {
   label: string
   key: string
-  placeholder: string
+  placeholder?: string
   required?: boolean
+  type?: "text" | "select"
+
+  options?: {
+    label: string
+    value: string
+  }[]
 }
+
+
 
 type Props<T extends Record<string, string>> = {
   title: string

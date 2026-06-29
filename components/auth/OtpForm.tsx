@@ -53,9 +53,14 @@ export default function OtpForm({ email, onBack }: OtpFormProps) {
     setLoading(true)
     setError("")
     try {
-      await verifyOtp(email, code, rememberMe)       // sets the cookie
-      const { role } = await getMe()                 // read role from API
-      router.push(`/dashboard/${role}`)
+      await verifyOtp(email, code, rememberMe)
+      console.log("verifieed")
+      const me = await getMe();
+      console.log("me", me);
+
+      console.log("navigating...");
+      router.push(`/dashboard/${me.role}`);
+      console.log("after push");
     } catch (err: any) {
       setError(err.message)
     } finally {

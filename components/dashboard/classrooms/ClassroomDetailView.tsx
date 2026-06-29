@@ -112,7 +112,6 @@ export default function ClassroomDetailView({ classroom_id, onBack }: Props) {
                     title="Enroll student"
                     fields={[
                         { label: "Student ID", key: "student_id", placeholder: "e.g. STU001", required: true },
-                        { label: "Roll no.", key: "roll_no", placeholder: "e.g. 01" },
                     ]}
                     onClose={() => setEnrollOpen(false)}
                     onSuccess={async (data) => {

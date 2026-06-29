@@ -30,7 +30,7 @@ export default function CoursesPage() {
                 data={courses}
                 loading={loading}
                 onSelect={setSelected}
-                emptyMessage="No teachers yet. Add one to get started."
+                emptyMessage="No courses yet. Add one to get started."
                 columns={[
                     {
                         label: "Courses",
