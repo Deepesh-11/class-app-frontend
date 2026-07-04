@@ -3,8 +3,9 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { login } from "@/lib/api/auth"
+// import { login } from "@/lib/api/auth"
 import OtpForm from "@/components/auth/OtpForm"
+import { login, getMe } from "@/lib/api/auth"
 
 export default function LoginForm() {
   const router = useRouter()
@@ -20,7 +21,8 @@ export default function LoginForm() {
     try {
       const result = await login(formData.email, formData.password)
       if (result.skip_otp) {
-        router.push("/dashboard") // remember me cookie still valid
+        const me = await getMe()
+        router.push(`/dashboard/${me.role}`) // remember me cookie still valid
       } else {
         setStep("otp")
       }
