@@ -1,8 +1,8 @@
 "use client"
 
+import { useTeacherSelf } from "@/lib/hooks/useTeacherSelf"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useTeacherSelf } from "@/lib/hooks/useTeacherSelf"
 
 export default function TeacherHomePage() {
   const { courses, classrooms, sessions, loading, error, startAttendance, startingCourseId } = useTeacherSelf()
@@ -98,6 +98,11 @@ export default function TeacherHomePage() {
                       <p className="text-sm font-medium text-gray-900">{course.course_name}</p>
                     </div>
                   </Link>
+                  <div className="flex gap-2 mb-3">
+                    <Link href={`/dashboard/teacher/courses/${course.id}/assignments`} className="text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded-full transition">Assignments</Link>
+                    <Link href={`/dashboard/teacher/courses/${course.id}/notes`} className="text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded-full transition">Notes</Link>
+                    <Link href={`/dashboard/teacher/courses/${course.id}/students`} className="text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded-full transition">Students</Link>
+                  </div>
                   <button
                     onClick={async () => {
                       const session = await startAttendance(course.id)
@@ -126,9 +131,9 @@ export default function TeacherHomePage() {
           ) : (
             <div className="grid grid-cols-3 gap-3">
               {classrooms.map((classroom: any) => (
-                <div key={classroom.id} className="bg-white border border-gray-200 rounded-xl p-5 hover:border-gray-300 transition">
+                <Link key={classroom.id} href={`/dashboard/teacher/classrooms/${classroom.id}`} className="bg-white border border-gray-200 rounded-xl p-5 hover:border-gray-300 transition block">
                   <p className="text-sm font-medium text-gray-900">{classroom.name}</p>
-                </div>
+                </Link>
               ))}
             </div>
           )}
