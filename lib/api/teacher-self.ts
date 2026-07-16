@@ -1,4 +1,5 @@
 import { ClassSessionResponse } from "@/lib/types/attendance"
+import { ClassroomDetail } from "@/lib/types/classroom"
 import { TeacherCourseDetailResponse } from "@/lib/types/course"
 const BASE = "/api"
 
@@ -34,6 +35,12 @@ export async function getMyClassroomsTeacher() {
 export async function getClassroomStudents(classroomId: number) {
   const res = await fetch(`${BASE}/teacher/me/classroom/${classroomId}/students`, { credentials: "include" })
   if (!res.ok) throw new Error("Failed to fetch students")
+  return res.json()
+}
+
+export async function getClassroomDetail(classroomId: number): Promise<ClassroomDetail> {
+  const res = await fetch(`${BASE}/teacher/me/classroom/${classroomId}`, { credentials: "include" })
+  if (!res.ok) throw new Error("Failed to fetch classroom detail")
   return res.json()
 }
 
