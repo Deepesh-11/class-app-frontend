@@ -24,7 +24,7 @@ export default function StudentAttendancePage() {
       await join(activeSession.id)
       setJoinState("joined")
       setConfirming(false)
-      // router.push(`/dashboard/student/courses/${activeSession.course_id}/sessions/${activeSession.id}/room`)
+      router.push(`/dashboard/student/courses/${activeSession.course_id}/sessions/${activeSession.id}/room`)
     } catch (e) {
       console.error("Failed to join session:", e)
     } finally {

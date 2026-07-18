@@ -6,6 +6,7 @@ import { getActiveSession } from "@/lib/api/student-self"
 type ActiveSession = {
   id: number
   title: string
+  course_id: number
   course_name: string
 }
 

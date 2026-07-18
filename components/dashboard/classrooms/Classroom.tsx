@@ -2,7 +2,12 @@ import { LiveKitRoom, VideoConference } from "@livekit/components-react";
 import "@livekit/components-styles";
 import { useSessionRoom } from "@/lib/hooks/useSessionRoom";
 
-export default function ClassRoom({ sessionId, isTeacher, apiBaseUrl, onLeave }) {
+export default function ClassRoom({ sessionId, isTeacher, apiBaseUrl, onLeave }: {
+  sessionId: number;
+  isTeacher: boolean;
+  apiBaseUrl: string;
+  onLeave: () => void;
+}) {
   const {
     livekitCreds,
     loading,
