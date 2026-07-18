@@ -23,7 +23,6 @@ export default function TeacherCourseSessionsPage() {
     const fetch = async () => {
       try {
         const course = await getTeacherCourse(Number(course_id))
-        console.log(course)
         setTeacherCourse(course)
       } catch (e) {
         setError((e as Error).message)

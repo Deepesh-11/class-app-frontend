@@ -45,6 +45,12 @@ export const nav = {
     },
 
     {
+      icon: "M9 5H7a2 2 0 00-2 2v12...M3 6a2 2 0 012-2h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V6zM8 20h8M12 17v3M7 10h10M7 13h6",
+      label: "All Sessions",
+      href: "/dashboard/teacher/sessions",
+    },
+
+    {
       icon: "M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.437L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9",
       label: "Notices",
       href: "/dashboard/teacher/notices",

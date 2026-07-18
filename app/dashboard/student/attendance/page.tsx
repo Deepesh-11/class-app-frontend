@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useStudentSelf } from "@/lib/hooks/useStudentSelf"
 import { useActiveSession } from "@/lib/hooks/useActiveSession"
 import { formatDateTime } from "@/lib/utils/utils"
+import { useRouter } from "next/navigation"
 
 export default function StudentAttendancePage() {
   const { activeSession, refresh } = useActiveSession()
@@ -14,6 +15,8 @@ export default function StudentAttendancePage() {
   const [joinState, setJoinState] = useState<"idle" | "joined">("idle")
   const [submitting, setSubmitting] = useState(false)
 
+  const router = useRouter()
+
   const handleJoinConfirm = async () => {
     if (!activeSession) return
     setSubmitting(true)
@@ -21,6 +24,7 @@ export default function StudentAttendancePage() {
       await join(activeSession.id)
       setJoinState("joined")
       setConfirming(false)
+      router.push(`/dashboard/student/courses/${activeSession.course_id}/sessions/${activeSession.id}/room`)
     } catch (e) {
       console.error("Failed to join session:", e)
     } finally {
@@ -196,8 +200,8 @@ export default function StudentAttendancePage() {
                       <td className="px-5 py-4 text-gray-600">{row.total_sessions}</td>
                       <td className="px-5 py-4">
                         <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${row.attendance_percentage >= 90 ? "bg-green-50 text-green-700"
-                            : row.attendance_percentage >= 75 ? "bg-yellow-50 text-yellow-700"
-                              : "bg-red-50 text-red-700"
+                          : row.attendance_percentage >= 75 ? "bg-yellow-50 text-yellow-700"
+                            : "bg-red-50 text-red-700"
                           }`}>
                           {row.attendance_percentage}%
                         </span>
@@ -233,21 +237,21 @@ export default function StudentAttendancePage() {
                       <td className="px-5 py-4 text-gray-600">{formatDateTime(row.session_date)}</td>
                       <td className="px-5 py-4">
                         <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${row.marked_at
-                            ? "bg-green-50 text-green-700"
-                            : "bg-red-50 text-red-700"
+                          ? "bg-green-50 text-green-700"
+                          : "bg-red-50 text-red-700"
                           }`}>
-                        {row.marked_at ? "Present" : "Absent"}
-                      </span>
-                    </td>
+                          {row.marked_at ? "Present" : "Absent"}
+                        </span>
+                      </td>
                     </tr>
                   ))}
-              </tbody>
-            </table>
+                </tbody>
+              </table>
             </div>
-      )
+          )
         )}
 
-    </div>
+      </div>
     </div >
   )
 }

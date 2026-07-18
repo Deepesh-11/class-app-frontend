@@ -86,6 +86,7 @@ export default function TeacherCourseStudentsPage() {
                   <th className="text-left text-xs font-medium text-gray-500 px-5 py-3">#</th>
                   <th className="text-left text-xs font-medium text-gray-500 px-5 py-3">Name</th>
                   <th className="text-left text-xs font-medium text-gray-500 px-5 py-3">Email</th>
+                  <th className="text-left text-xs font-medium text-gray-500 px-5 py-3">Roll No.</th>
                   <th className="text-left text-xs font-medium text-gray-500 px-5 py-3">Phone</th>
                 </tr>
               </thead>
@@ -96,14 +97,15 @@ export default function TeacherCourseStudentsPage() {
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-medium text-gray-600">
-                          {student.first_name?.[0]}{student.last_name?.[0]}
+                          {student.name?.[0]}
                         </div>
                         <span className="font-medium text-gray-900">
-                          {student.first_name} {student.last_name}
+                          {student.name} 
                         </span>
                       </div>
                     </td>
                     <td className="px-5 py-4 text-gray-600">{student.email}</td>
+                    <td className="px-5 py-4 text-gray-600">{student.roll_no}</td>
                     <td className="px-5 py-4 text-gray-600">{student.phone}</td>
                   </tr>
                 ))}

@@ -3,10 +3,12 @@
 import { useTeacherSelf } from "@/lib/hooks/useTeacherSelf"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useProfile } from "@/context/ProfileContext"
 
 export default function TeacherHomePage() {
   const { courses, classrooms, sessions, loading, error, startAttendance, startingCourseId } = useTeacherSelf()
   const router = useRouter()
+  const { profile } = useProfile()
 
   const totalSessions = courses.reduce((sum: number, c: any) => sum + (c.total_sessions || 0), 0)
 
@@ -55,7 +57,7 @@ export default function TeacherHomePage() {
 
         <div className="mb-8">
           <p className="text-sm text-gray-500 mb-1">Teacher Portal</p>
-          <h1 className="text-2xl font-medium text-gray-900 tracking-tight">Welcome back 👋</h1>
+          <h1 className="text-2xl font-medium text-gray-900 tracking-tight">Welcome back {profile?.name}👋</h1>
         </div>
 
         {/* Stats */}
@@ -107,7 +109,7 @@ export default function TeacherHomePage() {
                     onClick={async () => {
                       const session = await startAttendance(course.id)
                       if (session) {
-                        router.push(`/dashboard/teacher/attendance`)
+                        router.push(`/dashboard/teacher/courses/${course.id}/sessions/${session.id}/room`)
                       }
                     }}
                     disabled={startingCourseId === course.id}
