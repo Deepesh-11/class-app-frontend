@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server"
 import { cookies } from "next/headers"
+import { NextRequest, NextResponse } from "next/server"
 
 async function getToken() {
   const cookieStore = await cookies()
@@ -32,16 +32,34 @@ export async function POST(
   const { path } = await params
   const pathStr = path.join("/")
   const token = await getToken()
-  const body = await request.json().catch(() => null)
 
-  const res = await fetch(`http://127.0.0.1:8000/${pathStr}`, {
-    method: "POST",
-    headers: {
-      ...(token && { Cookie: `token=${token}` }),
-      "Content-Type": "application/json",
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  })
+  const contentType = request.headers.get("content-type") || ""
+  const isMultipart = contentType.includes("multipart/form-data")
+
+  let res: Response
+  if (isMultipart) {
+    // Forward the raw body untouched so FastAPI can parse the multipart form itself
+    res = await fetch(`http://127.0.0.1:8000/${pathStr}`, {
+      method: "POST",
+      headers: {
+        ...(token && { Cookie: `token=${token}` }),
+        "Content-Type": contentType,
+      },
+      body: request.body,
+      // @ts-expect-error - required by undici when streaming a request body
+      duplex: "half",
+    })
+  } else {
+    const body = await request.json().catch(() => null)
+    res = await fetch(`http://127.0.0.1:8000/${pathStr}`, {
+      method: "POST",
+      headers: {
+        ...(token && { Cookie: `token=${token}` }),
+        "Content-Type": "application/json",
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    })
+  }
 
   const data = await res.json()
   const response = NextResponse.json(data, { status: res.status })

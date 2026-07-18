@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
-import { useParams } from "next/navigation"
-import { toast } from "sonner"
 import { useAssignments, useMySubmission } from "@/lib/hooks/useAssignments"
+import { useParams } from "next/navigation"
+import { useState } from "react"
+import { toast } from "sonner"
 
 export default function StudentAssignmentsPage() {
   const { id } = useParams()
@@ -118,8 +118,7 @@ function AssignmentCard({
             </button>
           ) : (
             <div className="space-y-3">
-              <textarea placeholder="Write something (optional)" value={content} onChange={(e) => setContent(e.target.value)} rows={3} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900" />
-              <input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="text-sm text-gray-600" />
+              <textarea placeholder="Write something (optional)" value={content} onChange={(e) => setContent(e.target.value)} rows={3} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900" />              <input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="text-sm text-gray-600" />
               <div className="flex gap-2">
                 <button onClick={handleSubmit} disabled={submitting} className="h-9 px-4 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 disabled:opacity-50">
                   {submitting ? "Submitting..." : "Submit"}
