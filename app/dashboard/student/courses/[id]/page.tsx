@@ -1,35 +1,12 @@
 "use client"
 
-import { useParams } from "next/navigation"
+import { getNoteDownloadUrl } from "@/lib/api/note"
+import { useAssignments } from "@/lib/hooks/useAssignments"
 import { useCourseDetail } from "@/lib/hooks/useCoursesDetail"
+import { useNotes } from "@/lib/hooks/useNotes"
+import Link from "next/link"
+import { useParams } from "next/navigation"
 
-const notes = [
-    {
-        title: "Chapter 1 - Introduction.pdf",
-        uploaded: "2 days ago",
-    },
-    {
-        title: "Lecture Slides Week 2.pptx",
-        uploaded: "1 week ago",
-    },
-    {
-        title: "Practice Problems.pdf",
-        uploaded: "1 week ago",
-    },
-]
-
-const assignments = [
-    {
-        title: "Algebra Worksheet",
-        due: "Jun 30, 2026",
-        status: "Pending",
-    },
-    {
-        title: "Linear Equations Quiz",
-        due: "Jul 05, 2026",
-        status: "Submitted",
-    },
-]
 
 export default function CourseDetailPage() {
     const params = useParams()
@@ -39,6 +16,10 @@ export default function CourseDetailPage() {
         loading,
         error,
     } = useCourseDetail(params.id as string)
+
+    const { notes, loading: notesLoading } = useNotes(params.id as string)
+    const { assignments, loading: assignmentsLoading } = useAssignments(params.id as string)
+
 
     if (loading) {
         return (
@@ -164,27 +145,32 @@ export default function CourseDetailPage() {
                     </div>
 
                     <div className="divide-y divide-gray-100">
-                        {notes.map((note, index) => (
-                            <div
-                                key={index}
-                                className="flex items-center justify-between p-4 hover:bg-gray-50"
-                            >
-                                <div>
-                                    <p className="text-sm font-medium text-gray-900">
-                                        {note.title}
-                                    </p>
+    {notesLoading ? (
+        <p className="text-sm text-gray-500 p-4">Loading notes...</p>
+    ) : notes.length === 0 ? (
+        <p className="text-sm text-gray-400 p-4">No notes yet.</p>
+    ) : (
+        notes.map((note) => (
+            <div
+                key={note.id}
+                className="flex items-center justify-between p-4 hover:bg-gray-50"
+            >
+                <div>
+                    <p className="text-sm font-medium text-gray-900">
+                        {note.title}
+                    </p>
 
-                                    <p className="text-xs text-gray-500">
-                                        Uploaded {note.uploaded}
-                                    </p>
-                                </div>
+                    <p className="text-xs text-gray-500">
+                        Uploaded {new Date(note.created_at).toLocaleDateString()}
+                    </p>
+                </div>
 
-                                <button className="text-sm text-gray-600 hover:text-gray-900">
-                                    Download
-                                </button>
-                            </div>
-                        ))}
-                    </div>
+                <a href={getNoteDownloadUrl(note.id)} className="text-sm text-gray-600 hover:text-gray-900">Download</a>
+                
+            </div>
+        ))
+    )}
+</div>
                 </div>
 
                 {/* Assignments */}
@@ -196,32 +182,30 @@ export default function CourseDetailPage() {
                     </div>
 
                     <div className="divide-y divide-gray-100">
-                        {assignments.map((assignment, index) => (
-                            <div
-                                key={index}
-                                className="flex items-center justify-between p-4 hover:bg-gray-50"
-                            >
-                                <div>
-                                    <p className="text-sm font-medium text-gray-900">
-                                        {assignment.title}
-                                    </p>
+    {assignmentsLoading ? (
+        <p className="text-sm text-gray-500 p-4">Loading assignments...</p>
+    ) : assignments.length === 0 ? (
+        <p className="text-sm text-gray-400 p-4">No assignments yet.</p>
+    ) : (
+        assignments.map((assignment) => (
+            <Link key={assignment.id} href={`/dashboard/student/courses/${params.id}/assignments`} className="flex items-center justify-between p-4 hover:bg-gray-50">
+                <div>
+                    <p className="text-sm font-medium text-gray-900">
+                        {assignment.title}
+                    </p>
 
-                                    <p className="text-xs text-gray-500">
-                                        Due: {assignment.due}
-                                    </p>
-                                </div>
+                    <p className="text-xs text-gray-500">
+                        Due: {assignment.due_date ? new Date(assignment.due_date).toLocaleDateString() : "No due date"}
+                    </p>
+                </div>
 
-                                <span
-                                    className={`px-2.5 py-1 rounded-full text-xs font-medium ${assignment.status === "Submitted"
-                                        ? "bg-green-50 text-green-700"
-                                        : "bg-yellow-50 text-yellow-700"
-                                        }`}
-                                >
-                                    {assignment.status}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
+                <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                    View
+                </span>
+            </Link>
+        ))
+    )}
+</div>
                 </div>
             </div>
 

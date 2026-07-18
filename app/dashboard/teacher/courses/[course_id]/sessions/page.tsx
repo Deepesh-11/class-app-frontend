@@ -1,15 +1,20 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { useParams } from "next/navigation"
+
+import { useAssignments } from "@/lib/hooks/useAssignments"
+import { useNotes } from "@/lib/hooks/useNotes"
 import { useTeacherSelf } from "@/lib/hooks/useTeacherSelf"
 import { TeacherCourseDetailResponse } from "@/lib/types/course"
 import { formatDate } from "@/lib/utils/utils"
+import Link from "next/link"
+import { useParams } from "next/navigation"
+import { useEffect, useState } from "react"
 
 export default function TeacherCourseSessionsPage() {
   const { course_id } = useParams()
   const { getTeacherCourse } = useTeacherSelf()
+  const { notes, loading: notesLoading } = useNotes(course_id as string)
+  const { assignments, loading: assignmentsLoading } = useAssignments(course_id as string)
   const [teacherCourse, setTeacherCourse] = useState<TeacherCourseDetailResponse>()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -84,11 +89,7 @@ export default function TeacherCourseSessionsPage() {
           </div>
         </div>
 
-
-
-        {/* Resources */}
-        <div className="grid lg:grid-cols-2 gap-6 mb-6">
-          {/* Notes */}
+        {/* Notes */}
           <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
             <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
               <h2 className="font-medium text-gray-900">
@@ -100,57 +101,28 @@ export default function TeacherCourseSessionsPage() {
               </Link>
             </div>
 
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="text-left px-5 py-3 text-xs text-gray-500">
-                    File
-                  </th>
-
-                  <th className="text-left px-5 py-3 text-xs text-gray-500">
-                    Uploaded
-                  </th>
-
-                  <th className="text-left px-5 py-3 text-xs text-gray-500">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {[
-                  {
-                    id: 1,
-                    title: "Week 1 Notes.pdf",
-                    uploaded: "2026-06-20",
-                  },
-                  {
-                    id: 2,
-                    title: "Chapter 2 Slides.pptx",
-                    uploaded: "2026-06-22",
-                  },
-                ].map((note) => (
-                  <tr
-                    key={note.id}
-                    className="border-b border-gray-100 last:border-0"
-                  >
-                    <td className="px-5 py-4 font-medium text-gray-900">
-                      {note.title}
-                    </td>
-
-                    <td className="px-5 py-4 text-gray-600">
-                      {note.uploaded}
-                    </td>
-
-                    <td className="px-5 py-4">
-                      <button className="text-sm text-gray-500 hover:text-gray-900">
-                        Delete
-                      </button>
-                    </td>
+            {notesLoading ? (
+              <p className="text-sm text-gray-400 px-5 py-4">Loading...</p>
+            ) : notes.length === 0 ? (
+              <p className="text-sm text-gray-400 px-5 py-4">No notes yet.</p>
+            ) : (
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-100">
+                    <th className="text-left px-5 py-3 text-xs text-gray-500">File</th>
+                    <th className="text-left px-5 py-3 text-xs text-gray-500">Uploaded</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {notes.map((note) => (
+                    <tr key={note.id} className="border-b border-gray-100 last:border-0">
+                      <td className="px-5 py-4 font-medium text-gray-900">{note.title}</td>
+                      <td className="px-5 py-4 text-gray-600">{new Date(note.created_at).toLocaleDateString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
 
           {/* Assignments */}
@@ -165,64 +137,36 @@ export default function TeacherCourseSessionsPage() {
               </Link>
             </div>
 
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="text-left px-5 py-3 text-xs text-gray-500">
-                    Title
-                  </th>
-
-                  <th className="text-left px-5 py-3 text-xs text-gray-500">
-                    Due Date
-                  </th>
-
-                  <th className="text-left px-5 py-3 text-xs text-gray-500">
-                    Status
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {[
-                  {
-                    id: 1,
-                    title: "Algebra Worksheet",
-                    due: "2026-06-30",
-                    status: "Active",
-                  },
-                  {
-                    id: 2,
-                    title: "Linear Equations Quiz",
-                    due: "2026-07-05",
-                    status: "Draft",
-                  },
-                ].map((assignment) => (
-                  <tr
-                    key={assignment.id}
-                    className="border-b border-gray-100 last:border-0"
-                  >
-                    <td className="px-5 py-4 font-medium text-gray-900">
-                      {assignment.title}
-                    </td>
-
-                    <td className="px-5 py-4 text-gray-600">
-                      {assignment.due}
-                    </td>
-
-                    <td className="px-5 py-4">
-                      <span
-                        className={`px-2.5 py-1 rounded-full text-xs font-medium ${assignment.status === "Active"
-                          ? "bg-green-50 text-green-700"
-                          : "bg-yellow-50 text-yellow-700"
-                          }`}
-                      >
-                        {assignment.status}
-                      </span>
-                    </td>
+            {assignmentsLoading ? (
+              <p className="text-sm text-gray-400 px-5 py-4">Loading...</p>
+            ) : assignments.length === 0 ? (
+              <p className="text-sm text-gray-400 px-5 py-4">No assignments yet.</p>
+            ) : (
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-100">
+                    <th className="text-left px-5 py-3 text-xs text-gray-500">Title</th>
+                    <th className="text-left px-5 py-3 text-xs text-gray-500">Due Date</th>
+                    <th className="text-left px-5 py-3 text-xs text-gray-500">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {assignments.map((assignment) => (
+                    <tr key={assignment.id} className="border-b border-gray-100 last:border-0">
+                      <td className="px-5 py-4 font-medium text-gray-900">{assignment.title}</td>
+                      <td className="px-5 py-4 text-gray-600">
+                        {assignment.due_date ? new Date(assignment.due_date).toLocaleDateString() : "No due date"}
+                      </td>
+                      <td className="px-5 py-4">
+                        <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                          Active
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
 
@@ -275,6 +219,5 @@ export default function TeacherCourseSessionsPage() {
         )}
 
       </div>
-    </div>
   )
 }

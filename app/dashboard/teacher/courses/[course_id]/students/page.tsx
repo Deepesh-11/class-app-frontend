@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useTeacherSelf } from "@/lib/hooks/useTeacherSelf"
 import Link from "next/link"
 import { useParams } from "next/navigation"
-import { useTeacherSelf } from "@/lib/hooks/useTeacherSelf"
+import { useEffect, useState } from "react"
 
 export default function TeacherCourseStudentsPage() {
   const { course_id } = useParams()
@@ -65,7 +65,7 @@ export default function TeacherCourseStudentsPage() {
       <div className="max-w-5xl mx-auto">
 
         <div className="mb-8">
-          <Link href="/dashboard/teacher/courses" className="text-xs text-gray-400 hover:text-gray-700 transition">
+          <Link href="/dashboard/teacher" className="text-xs text-gray-400 hover:text-gray-700 transition">
             ← Back to courses
           </Link>
           <h1 className="text-2xl font-medium text-gray-900 tracking-tight mt-2">Students</h1>
