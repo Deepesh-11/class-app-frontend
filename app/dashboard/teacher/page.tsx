@@ -107,7 +107,7 @@ export default function TeacherHomePage() {
                     onClick={async () => {
                       const session = await startAttendance(course.id)
                       if (session) {
-                        router.push(`/dashboard/teacher/attendance`)
+                        router.push(`/dashboard/teacher/courses/${course.id}/sessions/${session.id}/room`)
                       }
                     }}
                     disabled={startingCourseId === course.id}
