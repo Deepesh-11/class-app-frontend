@@ -13,13 +13,25 @@ export async function GET(
   const { path } = await params
   const pathStr = path.join("/")
   const token = await getToken()
-
   const res = await fetch(`http://127.0.0.1:8000/${pathStr}`, {
     headers: {
       ...(token && { Cookie: `token=${token}` }),
-      "Content-Type": "application/json",
     },
   })
+
+  const contentType = res.headers.get("content-type") || ""
+  const isJson = contentType.includes("application/json")
+
+  if (!isJson) {
+    // File downloads, images, etc. — stream the body through untouched
+    const headers = new Headers()
+    const passthroughHeaders = ["content-type", "content-disposition", "content-length"]
+    for (const h of passthroughHeaders) {
+      const v = res.headers.get(h)
+      if (v) headers.set(h, v)
+    }
+    return new NextResponse(res.body, { status: res.status, headers })
+  }
 
   const data = await res.json()
   return NextResponse.json(data, { status: res.status })
